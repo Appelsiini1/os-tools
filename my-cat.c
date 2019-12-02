@@ -1,8 +1,8 @@
 /*
  * Käyttöjärjestelmät ja systeemiohjelmointi
- * Harjoitustyö osa 1/?
+ * Harjoitustyö osa 1/6
  * Syksy 2019
- * Rami Saarivuori
+ * Rami Saarivuori & Aarne Savolainen
 */
 #include <stdio.h>
 #include <stdlib.h>
