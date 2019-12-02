@@ -34,6 +34,7 @@ int main(int argc, char *argv[]) {
 			
 			printf("Reading file %s\n", argv[1]);
 			
+			/* Itse tiedoston luku */
 			line_size = getline(&line_buf, &line_buf_size, fp);
 			while (line_size >= 0) {
 				line_count++;
@@ -41,6 +42,7 @@ int main(int argc, char *argv[]) {
 				line_size = getline(&line_buf, &line_buf_size, fp);
 			}
 			
+			/* Lopetetaan ohjelmasuoritus tiedoston lukemisen jälkeen */
 			free(line_buf);
 			line_buf = NULL;
 			
