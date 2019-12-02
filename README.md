@@ -1,8 +1,11 @@
 # os-tools
 Käyttöjärjestelmät ja systeemiohjelmointi, Syksy 2019, LUT University
+
 UNIX UTILITIES
- Rami Saarivuori
- Aarne Savolainen
+
+Rami Saarivuori
+
+Aarne Savolainen
  
  my-cat on meidän oma versio Unixin cat -konsolikomennosta. Siinä annetaan argumentiksi tiedoston nimi ja käytännössä vain luetaan tiedosto ja tulostetaan konsoliin tulos.
  
