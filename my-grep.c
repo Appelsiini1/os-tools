@@ -1,6 +1,6 @@
 /*
  * Käyttöjärjestelmät ja systeemiohjelmointi
- * Harjoitustyö osa 1/?
+ * Harjoitustyö osa 2/6
  * Syksy 2019
  * Rami Saarivuori & Aarne Savolainen
  * my-grep, hakee tiedostoista hakusanaa
