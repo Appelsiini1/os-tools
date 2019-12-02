@@ -2,7 +2,7 @@
  * Käyttöjärjestelmät ja systeemiohjelmointi
  * Harjoitustyö osa 3/6
  * Syksy 2019
- * Rami Saarivuori
+ * Rami Saarivuori & Aarne Savolainen
  * my-zip, RLE pakkaustyökalu
 */
 #include <stdio.h>
