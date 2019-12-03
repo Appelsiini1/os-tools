@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/wait.h>
 
 void parser (char *);
 char* concat(const char *, const char *);
@@ -94,8 +95,34 @@ void parser(char strings[]) {
 		}
 	} else if (strcmp(com, polku) == 0) {//path
 		
-	} else {//komentoa ei tunnistettu
-		printf("Command not recognized\n");
+	} else {//komentoa ei tunnistettu, yritetään suorittaa
+		/* fork(), execv() ja wait() komentojen toteutuksessa käytetty apuna kurssikirjan lukua.
+		 * (http://pages.cs.wisc.edu/~remzi/OSTEP/cpu-api.pdf) 
+		 */
+		char *myargs, *file;
+		char delim2[2] = ">";
+		char *passed_args;
+		if ((passed_args = malloc(2* sizeof(char))) == NULL) {
+			printf("Memory allocation failed\n");
+			exit(1);
+		};
+		int i=1;
+		
+		if ((myargs = strtok(NULL, delim2)) !=NULL){
+			file = strtok(NULL, delim2);
+		} else {
+		passed_args[0] = strdup(com);
+		while ((com = strtok(myargs, delim)) != NULL) {
+			if ((passed_args = (char *) realloc(passed_args, sizeof(passed_args)+sizeof(char))) == NULL) {
+				printf("Memory allocation failed\n");
+				exit(1);
+			}
+			passed_args[i] = strdup(com);
+		}
+		passed_args[i+1] = NULL;
+	}
+	
+	free(passed_args);
 	}
 }
 
