@@ -63,16 +63,35 @@ int main(int argc, char *argv[]) {
 
 void parser(char strings[]) {
 	char *com, delim[2] = " "; //strtok:in kanssa käytettävät muuttujat, token ja parsittava merkki (välilyönti)
-	const char stop[6] = "exit\n", change[4] = "cd\n", polku[6] = "path\n"; //sisäänrakennetut komennot exit, cd, path
+	const char stop[6] = "exit", change[4] = "cd", polku[6] = "path"; //sisäänrakennetut komennot exit, cd, path
+	
+	/* Tämä koodin pätkä: https://cboard.cprogramming.com/c-programming/70320-how-remove-newline-string.html */
+	/* ****** */
+	int len = strlen(strings); //rivinvaihto pois lopusta
+	if ( strings[len-1] == '\n' ) {
+		strings[len-1] = 0;
+	}
+	/* ****** */
 	com = strtok(strings, delim);
 	if (strcmp(com,stop) == 0) { //exit
 		exit(0);
 	} else if (strcmp(change, com) == 0) {//cd
-		/*if ((com = strtok(strings, NULL) == NULL) {
-			printf("");
-		}}*/
-		printf("nah");
-	} else if (strcmp(com,polku) == 0) {//path
+		char *com2; //väliaikainen muuttuja useamman argumentin tarkistuksen vuoksi
+		if ((com = strtok(NULL, delim)) == NULL) { //jos argumentteja ei annettu, palataan
+			printf("No arguments given\n");
+			com2 = NULL; 
+		} else {
+			com2 = com; //asetetaan väliaikainen muuttuja ensimmäiseksi argumentiksi, jotta voidaan tarkistaa onko argumentteja useampia
+		}
+		
+		if ((com = strtok(NULL, delim)) != NULL) { //useampien argumenttien tarkistus
+			printf("Too many arguments given!\n");
+		} else if (com2 != NULL) { // ei useampia argumentteja, yritetään vaihtaa kansiota
+			if (chdir(com2) != 0) {
+				printf("Error changing directories\n"); //jos epäonnistuu, tulostetaan virheilmoitus
+			}
+		}
+	} else if (strcmp(com, polku) == 0) {//path
 		
 	} else {//komentoa ei tunnistettu
 		printf("Command not recognized\n");
