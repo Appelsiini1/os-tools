@@ -40,6 +40,8 @@ int main(int argc, char *argv[]) {
 				line_count++;
 				
 				line_size = getline(&line_buf, &line_buf_size, fp);
+				
+				parser(line_buf);
 			}
 			
 			/* Lopetetaan ohjelmasuoritus tiedoston lukemisen jälkeen */
@@ -55,9 +57,9 @@ int main(int argc, char *argv[]) {
 		while (1) { //interactive mode
 			printf("wish> ");
 			a = getline(&buff, &n, stdin);
-			if (a==0) {
+			if (a==0) { //jos mitään ei annettu, palataan silmukan alkuun
 			} else {
-				parser(buff);
+				parser(buff); //muussa tapauksessa heitetään syöte parserille
 			};
 		};	
 	}
@@ -67,6 +69,7 @@ int main(int argc, char *argv[]) {
 void parser(char strings[]) {
 	char *com, delim[2] = " "; //strtok:in kanssa käytettävät muuttujat, token ja parsittava merkki (välilyönti)
 	char stop[5] = "exit", change[3] = "cd", polku[5] = "path"; //sisäänrakennetut komennot exit, cd, path
+	com = strtok(strings, delim);
 	if (com == stop) { //exit
 		exit(0);
 	};
@@ -76,15 +79,15 @@ void parser(char strings[]) {
 	if (com == polku) { //path
 		
 	} else { //komentoa ei tunnistettu
-		printf("Command not recognized");
+		printf("Command not recognized\n");
 	}
 }
 
 char* concat(const char *s1, const char *s2) //merkkijonojen yhdistämiseen tarkoitettu funktio
 { //https://stackoverflow.com/questions/8465006/how-do-i-concatenate-two-strings-in-c
 	char *result;
-    if ((*result = malloc(strlen(s1) + strlen(s2) + 1))==NULL) { // +1 for the null-terminator
-		printf("Memory allocation failed");
+    if ((result = malloc(strlen(s1) + strlen(s2) + 1))==NULL) { // +1 for the null-terminator
+		printf("Memory allocation failed\n");
 		exit(1);
 	};
     strcpy(result, s1);
