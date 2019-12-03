@@ -63,15 +63,16 @@ int main(int argc, char *argv[]) {
 
 void parser(char strings[]) {
 	char *com, delim[2] = " "; //strtok:in kanssa käytettävät muuttujat, token ja parsittava merkki (välilyönti)
-	char stop[5] = "exit", change[3] = "cd", polku[5] = "path"; //sisäänrakennetut komennot exit, cd, path
+	const char stop[6] = "exit\n", change[4] = "cd\n", polku[6] = "path\n"; //sisäänrakennetut komennot exit, cd, path
 	com = strtok(strings, delim);
-	if (com == stop) { //exit
+	if (strcmp(com,stop) == 0) { //exit
 		exit(0);
-	};
-	if (com == change) {//cd
-		
-	};
-	if (com == polku) {//path
+	} else if (strcmp(change, com) == 0) {//cd
+		/*if ((com = strtok(strings, NULL) == NULL) {
+			printf("");
+		}}*/
+		printf("nah");
+	} else if (strcmp(com,polku) == 0) {//path
 		
 	} else {//komentoa ei tunnistettu
 		printf("Command not recognized\n");
