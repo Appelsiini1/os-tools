@@ -9,11 +9,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
-void parser (char *);
+typedef struct path_t {
+	char *dir;
+	struct path_t *next;
+} path, *pathPtr;
+
+void parser (char *, pathPtr *);
 char* concat(const char *, const char *);
+void newPathF (char *, pathPtr *);
+void freeMemory(pathPtr *);
 
 int main(int argc, char *argv[]) {
+	char *defaultPath = "/bin";
+	pathPtr paths = NULL;
+	newPathF(defaultPath, &paths);
 	if ( argc > 2 ) { /* Liikaa argumentteja */
 		printf("Too many arguments. There should be at most one argument.\n");
 		exit(1);
@@ -41,7 +52,7 @@ int main(int argc, char *argv[]) {
 				
 				line_size = getline(&line_buf, &line_buf_size, fp);
 				
-				parser(line_buf);
+				parser(line_buf, &paths);
 			}
 			
 			/* Lopetetaan ohjelmasuoritus tiedoston lukemisen jälkeen */
@@ -49,7 +60,6 @@ int main(int argc, char *argv[]) {
 			line_buf = NULL;
 			
 			fclose(fp);
-			exit(0);
 	} else {
 		char* buff = NULL; //lukupuskuri
 		size_t n;
@@ -59,26 +69,49 @@ int main(int argc, char *argv[]) {
 			a = getline(&buff, &n, stdin);
 			if (a==0) { //jos mitään ei annettu, palataan silmukan alkuun
 			} else {
-				parser(buff); //muussa tapauksessa heitetään syöte parserille
+				parser(buff, &paths); //muussa tapauksessa heitetään syöte parserille
 			};
 		};	
 	}
 	
+	freeMemory(&paths);
+	
 }
 
-void parser(char strings[]) {
+void parser(char strings[], pathPtr *paths) {
 	char *com, delim[2] = " "; //strtok:in kanssa käytettävät muuttujat, token ja parsittava merkki (välilyönti)
-	char stop[5] = "exit", change[3] = "cd", polku[5] = "path"; //sisäänrakennetut komennot exit, cd, path
+	const char stop[6] = "exit", change[4] = "cd", polku[6] = "path"; //sisäänrakennetut komennot exit, cd, path	
+	
+	/* Tämä koodin pätkä: https://cboard.cprogramming.com/c-programming/70320-how-remove-newline-string.html */
+	/* ****** */
+	int len = strlen(strings); //rivinvaihto pois lopusta
+	if ( strings[len-1] == '\n' ) {
+		strings[len-1] = 0;
+	}
+	/* ****** */
 	com = strtok(strings, delim);
-	if (com == stop) { //exit
+	if (strcmp(com,stop) == 0) { //exit
+		freeMemory(paths);
 		exit(0);
-	};
-	if (com == change) { //cd
+	} else if (strcmp(change, com) == 0) {//cd
+		char *com2; //väliaikainen muuttuja useamman argumentin tarkistuksen vuoksi
+		if ((com = strtok(NULL, delim)) == NULL) { //jos argumentteja ei annettu, palataan
+			printf("No arguments given\n");
+			com2 = NULL; 
+		} else {
+			com2 = com; //asetetaan väliaikainen muuttuja ensimmäiseksi argumentiksi, jotta voidaan tarkistaa onko argumentteja useampia
+		}
 		
-	};
-	if (com == polku) { //path
+		if ((com = strtok(NULL, delim)) != NULL) { //useampien argumenttien tarkistus
+			printf("Too many arguments given!\n");
+		} else if (com2 != NULL) { // ei useampia argumentteja, yritetään vaihtaa kansiota
+			if (chdir(com2) != 0) {
+				printf("Error changing directories\n"); //jos epäonnistuu, tulostetaan virheilmoitus
+			}
+		}
+	} else if (strcmp(com, polku) == 0) {//path
 		
-	} else { //komentoa ei tunnistettu
+	} else {//komentoa ei tunnistettu
 		printf("Command not recognized\n");
 	}
 }
@@ -93,4 +126,82 @@ char* concat(const char *s1, const char *s2) //merkkijonojen yhdistämiseen tark
     strcpy(result, s1);
     strcat(result, s2);
     return result;
+}
+
+void newPathF(char *newPaths, pathPtr *pFirst) {
+	char *newPath, delim2[2] = " ";
+	struct path_t *ptr, *pLast;
+	
+	if (newPaths == NULL) { // Polkua ei annettu argumenttina
+		
+		ptr = (*pFirst);
+		while (ptr != NULL) {
+			(*pFirst) = ptr->next; // Tyhjennetään olemassa oleva linkitetty lista
+			free(ptr);
+			ptr = (*pFirst);
+		}
+		
+		if (!(*pFirst = (pathPtr)malloc(sizeof(path)))) {
+				perror("Memory allocation error");
+				exit(1);
+		}
+		(*pFirst)->dir = NULL; // Luodaan tyhjä lista. Komentoja ei pitäisi pystyä suorittamaan
+		(*pFirst)->next = NULL;
+			
+	} else { // Polku annettu
+		
+		if ((*pFirst) != NULL) {
+			ptr = (*pFirst);
+			while (ptr != NULL) {
+				(*pFirst) = ptr->next; // Tyhjennetään olemassa oleva linkitetty lista
+				free(ptr);
+				ptr = (*pFirst);
+			}
+		}
+		if(ptr == NULL) {
+			if (!(ptr = (pathPtr)malloc(sizeof(path)))) { // Alustus
+				perror("Memory allocation error");
+				exit(1);
+			}
+			
+			ptr->dir = NULL;
+			ptr->next = NULL;
+		}
+		
+		newPath = strtok(newPaths, delim2);
+		strcpy(ptr->dir, newPath);
+		ptr->next = NULL;
+		
+		(*pFirst) = ptr;
+		pLast = ptr;
+		
+		while (strtok(NULL, delim2) != NULL) {
+			newPath = strtok(NULL, delim2);
+		
+			strcpy(ptr->dir, newPath);
+			ptr->next = NULL;
+			
+			pLast->next = ptr;
+			pLast = ptr;
+		}
+	}
+	
+}
+
+void freeMemory(pathPtr *pFirst) {
+	struct path_t *ptr;
+	
+	ptr = (*pFirst);
+	
+	while (ptr != NULL) {
+		printf("Directory %s", ptr->dir);
+		ptr = ptr->next;
+	}
+	
+	ptr = (*pFirst);
+	while (ptr != NULL) {
+		(*pFirst) = ptr->next; // Tyhjennetään olemassa oleva linkitetty lista
+		free(ptr);
+		ptr = (*pFirst);
+	}
 }
