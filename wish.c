@@ -101,7 +101,7 @@ void parser(char strings[]) {
 		 */
 		char *myargs, *file;
 		char delim2[2] = ">";
-		char *passed_args;
+		char **passed_args;
 		if ((passed_args = malloc(2* sizeof(char))) == NULL) {
 			printf("Memory allocation failed\n");
 			exit(1);
@@ -110,20 +110,39 @@ void parser(char strings[]) {
 		
 		if ((myargs = strtok(NULL, delim2)) !=NULL){
 			file = strtok(NULL, delim2);
-		} else {
+		};
+		file = file;
 		passed_args[0] = strdup(com);
 		while ((com = strtok(myargs, delim)) != NULL) {
-			if ((passed_args = (char *) realloc(passed_args, sizeof(passed_args)+sizeof(char))) == NULL) {
+			if ((passed_args = (char **) realloc(passed_args, sizeof(passed_args)+sizeof(char))) == NULL) {
 				printf("Memory allocation failed\n");
 				exit(1);
 			}
 			passed_args[i] = strdup(com);
 		}
 		passed_args[i+1] = NULL;
+		
+		if (fork() == 0) {
+					
+		//Tähän koodinpätkää otettu mallia täältä: https://stackoverflow.com/questions/2605130/redirecting-exec-output-to-a-buffer-or-file
+		/* ****** */
+		if (file != NULL) {
+			FILE* redir = fopen(file, "w");
+			
+			dup2(redir, 1);
+			
+			fclose(redir);
+		}
+		
+		execv(
+		
+		/* ****** */
+		
+		free(passed_args);
 	}
 	
-	free(passed_args);
-	}
+	
+	
 }
 
 char* concat(const char *s1, const char *s2) //merkkijonojen yhdistämiseen tarkoitettu funktio
