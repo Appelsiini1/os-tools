@@ -137,6 +137,7 @@ void newPathF(char newPaths[], pathPtr *pFirst) {
 
 	
 	if ((newPath = strtok(NULL, delim2)) == NULL) { // Polkua ei annettu argumenttina
+		printf("Luodaan tyhjä polkulista\n");
 		
 		if ((*pFirst) != NULL) {
 			ptr = (*pFirst);
@@ -157,7 +158,8 @@ void newPathF(char newPaths[], pathPtr *pFirst) {
 			(*pFirst)->next = NULL;
 		}	
 	} else { // Polku annettu
-		
+		printf("Luodaan uusi polkulista\n");
+
 		if((*pFirst) != NULL) {
 			ptr = (*pFirst);
 			while (ptr != NULL) {
