@@ -15,10 +15,21 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-void parser (char *);
+typedef struct path_t {
+	char *dir;
+	struct path_t *next;
+} path, *pathPtr;
+
+void parser (char *, pathPtr *);
 char* concat(const char *, const char *);
+void newPathF (char *, pathPtr *);
+void freeMemory(pathPtr *);
 
 int main(int argc, char *argv[]) {
+	char defaultPath[] = "path /bin/";
+	pathPtr paths = NULL;
+	newPathF(defaultPath, &paths);
+	
 	if ( argc > 2 ) { /* Liikaa argumentteja */
 		printf("Too many arguments. There should be at most one argument.\n");
 		exit(1);
@@ -39,18 +50,20 @@ int main(int argc, char *argv[]) {
 
 			printf("Reading file %s\n", argv[1]);
 
-			line_size = getline(&line_buf, &line_buf_size, fp);
+			/* Itse tiedoston luku */
 			while (line_size >= 0) {
 				line_count++;
-
+				
 				line_size = getline(&line_buf, &line_buf_size, fp);
+				
+				parser(line_buf, &paths);
 			}
-
+			
+			/* Lopetetaan ohjelmasuoritus tiedoston lukemisen jälkeen */
 			free(line_buf);
 			line_buf = NULL;
-
+			
 			fclose(fp);
-			exit(0);
 	} else {
 		char* buff = NULL; //lukupuskuri
 		size_t n;
@@ -60,17 +73,23 @@ int main(int argc, char *argv[]) {
 			a = getline(&buff, &n, stdin);
 			if (a==0) { //jos mitään ei annettu, palataan silmukan alkuun
 			} else {
-				parser(buff); //muussa tapauksessa heitetään syöte parserille
+				parser(buff, &paths); //muussa tapauksessa heitetään syöte parserille
 			};
 		};
-	};
-};
+	}
+	
+	freeMemory(&paths);
+	
+}
 
-void parser(char strings[]) {
+void parser(char strings[], pathPtr *paths) {
 	char *com, delim[2] = " "; //strtok:in kanssa käytettävät muuttujat, token ja parsittava merkki (välilyönti)
 	const char stop[6] = "exit", change[4] = "cd", polku[6] = "path"; //sisäänrakennetut komennot exit, cd, path
 	char* path_var;
-	pathPtr *ptr=pFirst;
+	path *ptr=(*paths);
+	char strings2[strlen(strings)];
+	strcpy(strings2, strings);
+	
 	
 	/* Tämä koodin pätkä: https://cboard.cprogramming.com/c-programming/70320-how-remove-newline-string.html */
 	/* ****** */
@@ -81,6 +100,7 @@ void parser(char strings[]) {
 	/* ****** */
 	com = strtok(strings, delim);
 	if (strcmp(com,stop) == 0) { //exit
+		freeMemory(paths);
 		exit(0);
 	} else if (strcmp(change, com) == 0) {//cd
 		char *com2; //väliaikainen muuttuja useamman argumentin tarkistuksen vuoksi
@@ -99,7 +119,7 @@ void parser(char strings[]) {
 			}
 		}
 	} else if (strcmp(com, polku) == 0) {//path
-		
+		newPathF(strings2, paths);		
 	} else {//komentoa ei tunnistettu, yritetään suorittaa
 		/* fork(), execv() ja wait() komentojen toteutuksessa käytetty apuna kurssikirjan lukua.
 		 * (http://pages.cs.wisc.edu/~remzi/OSTEP/cpu-api.pdf) 
@@ -124,6 +144,10 @@ void parser(char strings[]) {
 				exit(1);
 			}
 			passed_args[i] = strdup(com);
+			
+			if (com == NULL) {
+				break;
+			}
 		}
 		passed_args[i+1] = NULL;
 		
@@ -131,6 +155,9 @@ void parser(char strings[]) {
 		while (ptr != NULL) {
 			x++;
 			ptr = ptr->next;
+			if (ptr->next == NULL) {
+				break;
+			}
 		}
 		
 		if (fork() == 0) {
@@ -148,7 +175,7 @@ void parser(char strings[]) {
 		/* ****** */
 		
 		
-		ptr = pFirst;
+		ptr = (*paths);
 		for (int i=0;i<x;i++) {
 			if (ptr->dir == NULL) {
 				break;
@@ -162,7 +189,7 @@ void parser(char strings[]) {
 	free(path_var);
 	
 	
-	
+}
 }
 
 char* concat(const char *s1, const char *s2) //merkkijonojen yhdistämiseen tarkoitettu funktio
@@ -175,4 +202,96 @@ char* concat(const char *s1, const char *s2) //merkkijonojen yhdistämiseen tark
     strcpy(result, s1);
     strcat(result, s2);
     return result; //tulos
-};
+}
+
+void newPathF(char newPaths[], pathPtr *pFirst) {
+	char *newPath, delim2[2] = " ";
+	struct path_t *ptr, *pLast;
+	
+	newPath = strtok(newPaths, delim2);
+
+	
+	if ((newPath = strtok(NULL, delim2)) == NULL) { // Polkua ei annettu argumenttina
+		printf("Luodaan tyhjä polkulista\n");
+		
+		if ((*pFirst) != NULL) {
+			ptr = (*pFirst);
+			while (ptr != NULL) {
+				(*pFirst) = ptr->next; // Tyhjennetään olemassa oleva linkitetty lista
+				free(ptr);
+				ptr = (*pFirst);
+			}
+		}
+		
+		if(!(*pFirst)) {
+			if (!(*pFirst = (pathPtr)malloc(sizeof(path)))) { // Alustus
+				perror("Memory allocation error\n");
+				exit(1);
+			}
+			
+			(*pFirst)->dir = NULL;
+			(*pFirst)->next = NULL;
+		}	
+	} else { // Polku annettu
+		printf("Luodaan uusi polkulista\n");
+
+		if((*pFirst) != NULL) {
+			ptr = (*pFirst);
+			while (ptr != NULL) {
+				(*pFirst) = ptr->next; // Tyhjennetään olemassa oleva linkitetty lista
+				free(ptr);
+				ptr = (*pFirst);
+			}
+		}
+		
+		if(!(*pFirst)) {
+			if (!(*pFirst = (pathPtr)malloc(sizeof(path)))) { // Alustus
+				perror("Memory allocation error\n");
+				exit(1);
+			}
+			
+			(*pFirst)->dir = NULL;
+			(*pFirst)->next = NULL;
+		}
+		
+		(*pFirst)->dir = newPath;
+		(*pFirst)->next = NULL;
+		
+		ptr = (*pFirst);
+		pLast = ptr;
+				
+		while ((newPath = strtok(NULL, delim2)) != NULL) {
+			if(!(ptr = (pathPtr)malloc(sizeof(path)))) {
+				perror("Memory allocation error");
+				exit(1);
+			}
+		
+			ptr->dir = newPath;
+			ptr->next = NULL;
+			
+			pLast->next = ptr;
+			pLast = ptr;
+		}
+				
+		ptr = (*pFirst);
+		printf("Polut:\n");
+		while (ptr != NULL) {
+			printf("%s\n", ptr->dir);
+			ptr = ptr->next;
+		}
+		
+	}
+	
+}
+
+void freeMemory(pathPtr *pFirst) {
+	struct path_t *ptr;
+	
+	ptr = (*pFirst);
+	while (ptr != NULL) {
+		(*pFirst) = ptr->next; // Tyhjennetään olemassa oleva linkitetty lista
+		free(ptr);
+		ptr = (*pFirst);
+	}
+}
+
