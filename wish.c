@@ -69,6 +69,8 @@ int main(int argc, char *argv[]) {
 void parser(char strings[]) {
 	char *com, delim[2] = " "; //strtok:in kanssa käytettävät muuttujat, token ja parsittava merkki (välilyönti)
 	const char stop[6] = "exit", change[4] = "cd", polku[6] = "path"; //sisäänrakennetut komennot exit, cd, path
+	char* path_var;
+	pathPtr *ptr=pFirst;
 	
 	/* Tämä koodin pätkä: https://cboard.cprogramming.com/c-programming/70320-how-remove-newline-string.html */
 	/* ****** */
@@ -125,6 +127,12 @@ void parser(char strings[]) {
 		}
 		passed_args[i+1] = NULL;
 		
+		int x=0;
+		while (ptr != NULL) {
+			x++;
+			ptr = ptr->next;
+		}
+		
 		if (fork() == 0) {
 					
 		//Tähän koodinpätkää otettu mallia täältä: https://stackoverflow.com/questions/2605130/redirecting-exec-output-to-a-buffer-or-file
@@ -139,18 +147,19 @@ void parser(char strings[]) {
 		
 		/* ****** */
 		
-		char* path_var;
+		
+		ptr = pFirst;
 		for (int i=0;i<x;i++) {
-			
-			path_var = concat(com, path);
+			if (ptr->dir == NULL) {
+				break;
+			} 
+			path_var = concat(ptr->dir, com);
 		
 			execv(path_var, passed_args);
 		}
-		
-		
-		
 	}
 	free(passed_args);
+	free(path_var);
 	
 	
 	
