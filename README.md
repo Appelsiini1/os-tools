@@ -18,3 +18,5 @@ UNIX UTILITIES
 UNIX SHELL
 
 wish on meidän tekemä yksinkertainen Unix Shell komentokehote. Ohjelman käynnistyessä se ottaa vastaan korkeintaan yhden argumentin, joka on tekstitiedoston nimi, mistä se lukee käskyt. Ohjelmasuoritus loppuu, kun päästään tiedoston loppuun. Jos argumenttia ei anneta, aloittaa sen interaktiivisen tilan, missä käyttäjä voi antaa käskyjä ja ohjelma loppuu vasta käskyllä exit.
+
+Wishimme voi suorittaa ohjelmia. Wishiimme kuuluu myös kolme sisäänrakennettua käskyä: cd, path ja exit. Exit ei ota mitään argumentteja, se vain tyhjentää polkulistan ja vapauttaa muistin, ja lopettaa ohjelmasuorituksen. Cd vaihtaa käsiteltävää työkansiota ja ottaa argumentiksi uuden kansion polun. Path vaihtaa polkua, mistä suoritettavia ohjelmia etsitään, ja ottaa argumentiksi uuden polun. Pathille voi myös olla antamatta polkua, jolloin se luo tyhjän polkulistan, jolloin käskyjä ei voi suorittaa, koska komentokehotteemme ei tiedä, mistä ohjelmaa pitäisi etsiä.
