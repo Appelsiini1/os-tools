@@ -11,6 +11,9 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 void parser (char *);
 char* concat(const char *, const char *);
@@ -127,19 +130,27 @@ void parser(char strings[]) {
 		//Tähän koodinpätkää otettu mallia täältä: https://stackoverflow.com/questions/2605130/redirecting-exec-output-to-a-buffer-or-file
 		/* ****** */
 		if (file != NULL) {
-			FILE* redir = fopen(file, "w");
+			int redir = open(file, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
 			
 			dup2(redir, 1);
 			
-			fclose(redir);
+			close(redir);
 		}
-		
-		execv(
 		
 		/* ****** */
 		
-		free(passed_args);
+		char* path_var;
+		for (int i=0;i<x;i++) {
+			
+			path_var = concat(com, path);
+		
+			execv(path_var, passed_args);
+		}
+		
+		
+		
 	}
+	free(passed_args);
 	
 	
 	
@@ -155,4 +166,4 @@ char* concat(const char *s1, const char *s2) //merkkijonojen yhdistämiseen tark
     strcpy(result, s1);
     strcat(result, s2);
     return result; //tulos
-}
+};
