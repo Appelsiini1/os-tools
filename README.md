@@ -24,3 +24,9 @@ Wishimme voi suorittaa ohjelmia. Wishiimme kuuluu myös kolme sisäänrakennettu
 KERNEL HACKING
 
 Loimme oman systeemikutsun getcount(), mikä laskee, kuinka monta kertaa tiettyä systeemikutsua on kutsuttu kernelin suorituksen aikana ja palauttaa lukumäärän. Se pyytää kahta kokonaislukuargumenttia: ensimmäinen on joko 0 tai 1, mikä kertoo aloitetaanko laskeminen alusta ja toinen argumentti kertoo laskettavan systeemikutsun ID:n (se pitää itse selvittää systeemikutsujen header-tiedostosta, esim sys_read ID on 5, jonka se ottaa oletuksena). Jos toinen argumentti on 0, laskettavaa systeemikutsua ei vaihdeta.
+
+
+Projektin osissa käyetyt lähteet ovat kommentoituna suoraan lähdekoodiin.
+Kernel Hacking osan lähteet:
+https://stackoverflow.com/questions/21653195/xv6-add-a-system-call-that-counts-system-calls?rq=1
+https://medium.com/@viduniwickramarachchi/add-a-new-system-call-in-xv6-5486c2437573
