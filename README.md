@@ -20,3 +20,7 @@ UNIX SHELL
 wish on meidän tekemä yksinkertainen Unix Shell komentokehote. Ohjelman käynnistyessä se ottaa vastaan korkeintaan yhden argumentin, joka on tekstitiedoston nimi, mistä se lukee käskyt. Ohjelmasuoritus loppuu, kun päästään tiedoston loppuun. Jos argumenttia ei anneta, aloittaa sen interaktiivisen tilan, missä käyttäjä voi antaa käskyjä ja ohjelma loppuu vasta käskyllä exit.
 
 Wishimme voi suorittaa ohjelmia. Wishiimme kuuluu myös kolme sisäänrakennettua käskyä: cd, path ja exit. Exit ei ota mitään argumentteja, se vain tyhjentää polkulistan ja vapauttaa muistin, ja lopettaa ohjelmasuorituksen. Cd vaihtaa käsiteltävää työkansiota ja ottaa argumentiksi uuden kansion polun. Path vaihtaa polkua, mistä suoritettavia ohjelmia etsitään, ja ottaa argumentiksi uuden polun. Pathille voi myös olla antamatta polkua, jolloin se luo tyhjän polkulistan, jolloin käskyjä ei voi suorittaa, koska komentokehotteemme ei tiedä, mistä ohjelmaa pitäisi etsiä.
+
+KERNEL HACKING
+
+Loimme oman systeemikutsun getcount(), mikä laskee, kuinka monta kertaa tiettyä systeemikutsua on kutsuttu kernelin suorituksen aikana ja palauttaa lukumäärän. Se pyytää kahta kokonaislukuargumenttia: ensimmäinen on joko 0 tai 1, mikä kertoo aloitetaanko laskeminen alusta ja toinen argumentti kertoo laskettavan systeemikutsun ID:n (se pitää itse selvittää systeemikutsujen header-tiedostosta, esim sys_read ID on 5, jonka se ottaa oletuksena). Jos toinen argumentti on 0, laskettavaa systeemikutsua ei vaihdeta.
