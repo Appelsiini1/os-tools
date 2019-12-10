@@ -29,4 +29,5 @@ Loimme oman systeemikutsun getcount(), mik채 laskee, kuinka monta kertaa tietty�
 Projektin osissa k채yetyt l채hteet ovat kommentoituna suoraan l채hdekoodiin.
 Kernel Hacking osan l채hteet:
 https://stackoverflow.com/questions/21653195/xv6-add-a-system-call-that-counts-system-calls?rq=1
+
 https://medium.com/@viduniwickramarachchi/add-a-new-system-call-in-xv6-5486c2437573
