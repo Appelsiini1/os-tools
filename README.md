@@ -7,7 +7,7 @@
 
 ### 1. UNIX UTILITIES
 
-`mycat file1 [-file2] ... `
+`mycat file1 [file2] ... `
 
  [my-cat](my-cat.c) on meidän oma versio Unixin cat -konsolikomennosta. Siinä annetaan argumentiksi tiedoston nimi ja käytännössä vain luetaan tiedosto ja tulostetaan konsoliin tulos.
 
@@ -44,7 +44,7 @@ Loimme oman systeemikutsun `getcount()`, joka laskee, kuinka monta kertaa tietty
 
 `int getcount(int x, int y)`
 
-Se pyytää kahta kokonaislukuargumenttia: ensimmäinen `(int x)` on joko 0 tai 1, joka kertoo nollataanko laskuri (0 = ei, 1 = kyllä) ja toinsena argumenttina `(int y)` annetaan laskettavan systeemikutsun ID:n (ID:t löytyvät syscall.h-tiedostosta, esim. sys_read ID on 5, jonka se ottaa oletuksena). Jos toinen argumentti on 0, laskettavaa systeemikutsua ei vaihdeta.
+Se pyytää kahta kokonaislukuargumenttia: ensimmäinen `(int x)` on joko 0 tai 1, joka kertoo nollataanko laskuri (0 = ei, 1 = kyllä) ja toisena argumenttina `(int y)` annetaan laskettavan systeemikutsun ID:n (ID:t löytyvät syscall.h-tiedostosta, esim. sys_read ID on 5, jonka se ottaa oletuksena). Jos toinen argumentti on 0, laskettavaa systeemikutsua ei vaihdeta.
 Kansiossa on myös testeissämme käytetty ohjelma, [testi.c](xv6-sys/testi.c). Ohjelmaa voi käyttää xv6 käyttöjärjestelmässä lisäämällä se Makefileen.
 
 Projektin osissa käyetyt lähteet ovat kommentoituna suoraan lähdekoodiin.
