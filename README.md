@@ -26,7 +26,7 @@
 
 ### 2. UNIX SHELL
 
-`wish [command] (> file)`
+`wish [command] [arguments] (> file)`
 
 [wish](wish.c) on tekemämme yksinkertainen Unix Shell komentokehote. Ohjelman käynnistyessä se ottaa vastaan korkeintaan yhden argumentin, tekstitiedoston nimen, josta se lukee suoritettavat käskyt. Ohjelmasuoritus loppuu, kun päästään tiedoston loppuun. Jos argumenttia ei anneta, aloittaa sen interaktiivisen tilan, missä käyttäjä voi antaa käskyjä ja ohjelma loppuu vasta käskyllä `exit`.
 
