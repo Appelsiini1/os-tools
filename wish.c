@@ -24,6 +24,8 @@ void parser (char *, pathPtr *);
 char* concat(const char *, const char *);
 void newPathF (char *, pathPtr *);
 void freeMemory(pathPtr *);
+int countChar(char* s, char c);
+char** stringToArray(char* s);
 
 int main(int argc, char *argv[]) {
 	char defaultPath[] = "path /bin/";
@@ -85,19 +87,16 @@ int main(int argc, char *argv[]) {
 void parser(char strings[], pathPtr *paths) {
 	char *com, delim[2] = " "; //strtok:in kanssa käytettävät muuttujat, token ja parsittava merkki (välilyönti)
 	const char stop[6] = "exit", change[4] = "cd", polku[6] = "path"; //sisäänrakennetut komennot exit, cd, path
-	char* path_var;
-	path *ptr=(*paths);
-	char strings2[strlen(strings)];
-	strcpy(strings2, strings);
+	char* path_var = "";
 	
 	
 	/* Tämä koodin pätkä: https://cboard.cprogramming.com/c-programming/70320-how-remove-newline-string.html */
-	/* ****** */
+	/* ****** */ 
 	int len = strlen(strings); //rivinvaihto pois lopusta
 	if ( strings[len-1] == '\n' ) {
 		strings[len-1] = 0;
-	}
-	/* ****** */
+	} 
+	/* ****** */ 
 	com = strtok(strings, delim);
 	if (strcmp(com,stop) == 0) { //exit
 		freeMemory(paths);
@@ -119,47 +118,44 @@ void parser(char strings[], pathPtr *paths) {
 			}
 		}
 	} else if (strcmp(com, polku) == 0) {//path
-		newPathF(strings2, paths);		
+		newPathF(strings, paths);		
 	} else {//komentoa ei tunnistettu, yritetään suorittaa
 		/* fork(), execv() ja wait() komentojen toteutuksessa käytetty apuna kurssikirjan lukua.
 		 * (http://pages.cs.wisc.edu/~remzi/OSTEP/cpu-api.pdf) 
 		 */
 		char *myargs, *file;
 		char delim2[2] = ">";
-		char **passed_args;
-		if ((passed_args = malloc(2* sizeof(char))) == NULL) {
-			printf("Memory allocation failed\n");
-			exit(1);
-		};
-		int i=1;
+		char* passed_args[] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
+		path *ptr;
+		int *wstatus=0, i=1;
+
 		
 		if ((myargs = strtok(NULL, delim2)) !=NULL){
 			file = strtok(NULL, delim2);
-		};
-		file = file;
-		passed_args[0] = strdup(com);
-		while ((com = strtok(myargs, delim)) != NULL) {
-			if ((passed_args = (char **) realloc(passed_args, sizeof(passed_args)+sizeof(char))) == NULL) {
-				printf("Memory allocation failed\n");
-				exit(1);
-			}
-			passed_args[i] = strdup(com);
-			
-			if (com == NULL) {
-				break;
-			}
+		} else {
+			file = NULL;
 		}
-		passed_args[i+1] = NULL;
+		char *temp;
+		temp = strtok(myargs, delim);
+		passed_args[0] = strdup(com);
+		if (temp != NULL) {
+			passed_args[i] = strdup(temp);
+			while ((temp = strtok(NULL, delim)) != NULL) {
+				i++;
+				passed_args[i] = strdup(temp);
+			}
 		
+		}
+		file = file;
+
+				
 		int x=0;
+		ptr = (*paths);
 		while (ptr != NULL) {
 			x++;
 			ptr = ptr->next;
-			if (ptr->next == NULL) {
-				break;
-			}
+
 		}
-		
 		if (fork() == 0) {
 					
 		//Tähän koodinpätkää otettu mallia täältä: https://stackoverflow.com/questions/2605130/redirecting-exec-output-to-a-buffer-or-file
@@ -174,20 +170,18 @@ void parser(char strings[], pathPtr *paths) {
 		
 		/* ****** */
 		
-		
 		ptr = (*paths);
 		for (int i=0;i<x;i++) {
 			if (ptr->dir == NULL) {
 				break;
 			} 
 			path_var = concat(ptr->dir, com);
-		
+
 			execv(path_var, passed_args);
 		}
+	} else {
+		wait(wstatus);
 	}
-	free(passed_args);
-	free(path_var);
-	
 	
 }
 }
@@ -212,7 +206,7 @@ void newPathF(char newPaths[], pathPtr *pFirst) {
 
 	
 	if ((newPath = strtok(NULL, delim2)) == NULL) { // Polkua ei annettu argumenttina
-		printf("Luodaan tyhjä polkulista\n");
+		
 		
 		if ((*pFirst) != NULL) {
 			ptr = (*pFirst);
@@ -295,3 +289,40 @@ void freeMemory(pathPtr *pFirst) {
 	}
 }
 
+/* CounChar ja stringToArray funktiot: 
+ * https://www.linuxquestions.org/questions/programming-9/unable-to-dynamically-create-an-array-of-params-for-execv-in-c-854629/ 
+ */
+
+int countChar(char* s, char c)
+{
+
+    int cnt = 0;
+    int len = strlen(s);
+    for(int i = 0; i < len; i++)
+    {
+
+        if(s[i] == c) cnt++;
+
+    }
+    return cnt;
+
+}
+
+char** stringToArray(char* s)
+{
+
+    char **array = (char**)calloc(countChar(s, ' '), sizeof(char*));
+    char * pch = strtok(s, " ");
+    int i = 0;
+    while(pch != NULL)
+    {
+
+        int len = strlen(pch);
+        array[i] = (char*)calloc(len, sizeof(char));
+        strcpy(array[i++], pch);
+        pch = strtok(NULL, " ");
+
+    }
+    return array;
+
+}
