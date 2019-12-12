@@ -24,8 +24,6 @@ void parser (char *, pathPtr *);
 char* concat(const char *, const char *);
 void newPathF (char *, pathPtr *);
 void freeMemory(pathPtr *);
-int countChar(char* s, char c);
-char** stringToArray(char* s);
 
 int main(int argc, char *argv[]) {
 	char defaultPath[] = "path /bin/";
@@ -287,42 +285,4 @@ void freeMemory(pathPtr *pFirst) {
 		free(ptr);
 		ptr = (*pFirst);
 	}
-}
-
-/* CounChar ja stringToArray funktiot: 
- * https://www.linuxquestions.org/questions/programming-9/unable-to-dynamically-create-an-array-of-params-for-execv-in-c-854629/ 
- */
-
-int countChar(char* s, char c)
-{
-
-    int cnt = 0;
-    int len = strlen(s);
-    for(int i = 0; i < len; i++)
-    {
-
-        if(s[i] == c) cnt++;
-
-    }
-    return cnt;
-
-}
-
-char** stringToArray(char* s)
-{
-
-    char **array = (char**)calloc(countChar(s, ' '), sizeof(char*));
-    char * pch = strtok(s, " ");
-    int i = 0;
-    while(pch != NULL)
-    {
-
-        int len = strlen(pch);
-        array[i] = (char*)calloc(len, sizeof(char));
-        strcpy(array[i++], pch);
-        pch = strtok(NULL, " ");
-
-    }
-    return array;
-
 }
