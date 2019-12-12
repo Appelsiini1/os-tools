@@ -26,7 +26,7 @@
 
 ### 2. UNIX SHELL
 
-`wish [file]`
+`wish [command] (> file)`
 
 [wish](wish.c) on tekemämme yksinkertainen Unix Shell komentokehote. Ohjelman käynnistyessä se ottaa vastaan korkeintaan yhden argumentin, tekstitiedoston nimen, josta se lukee suoritettavat käskyt. Ohjelmasuoritus loppuu, kun päästään tiedoston loppuun. Jos argumenttia ei anneta, aloittaa sen interaktiivisen tilan, missä käyttäjä voi antaa käskyjä ja ohjelma loppuu vasta käskyllä `exit`.
 
@@ -37,6 +37,8 @@ Wishimme voi suorittaa ohjelmia. Wishiimme kuuluu myös kolme sisäänrakennettu
 `cd` vaihtaa käsiteltävää työkansiota ja ottaa argumentiksi uuden kansion polun. 
 
 `path` vaihtaa polkua, mistä suoritettavia ohjelmia etsitään, ja ottaa argumentiksi uuden polun. `path`-komennolle voi myös olla antamatta polkua, jolloin se tyhjentää polkulistan. Tällöin käskyjä ei voi suorittaa, koska komentokehotteemme ei tiedä, mistä ohjelmaa pitäisi etsiä.
+
+Muut kuin sisäänrakennetut käskyt yritetään suorittaa `path`-komennolla annetuista poluista. Oletuksena etsitään kansiosta `/bin/`. Komennoille voi antaa normaaliin tapaan argumentteja. Tulostuksen voi ohjata tiedostoon käyttämällä `>` merkkiä ja kirjoittamalla kohdetiedoston nimen merkin jälkeen.
 
 ### 3. KERNEL HACKING
 
