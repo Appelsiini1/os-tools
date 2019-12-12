@@ -15,20 +15,20 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-typedef struct path_t {
+typedef struct path_t { //polkujen tallentamiseen
 	char *dir;
 	struct path_t *next;
 } path, *pathPtr;
 
-void parser (char *, pathPtr *);
-char* concat(const char *, const char *);
-void newPathF (char *, pathPtr *);
-void freeMemory(pathPtr *);
+void parser (char *, pathPtr *); //Komentotulkki
+char* concat(const char *, const char *); //merkkijonojen yhdistäminen
+void newPathF (char *, pathPtr *); //polkujen luomistyökalu
+void freeMemory(pathPtr *); //muistin vapautus
 
 int main(int argc, char *argv[]) {
-	char defaultPath[] = "path /bin/";
+	char defaultPath[] = "path /bin/"; //oletuspolku
 	pathPtr paths = NULL;
-	newPathF(defaultPath, &paths);
+	newPathF(defaultPath, &paths); //lisätään oletus
 	
 	if ( argc > 2 ) { /* Liikaa argumentteja */
 		printf("Too many arguments. There should be at most one argument.\n");
@@ -123,20 +123,21 @@ void parser(char strings[], pathPtr *paths) {
 		 */
 		char *myargs, *file;
 		char delim2[2] = ">";
+		/* argumenttilista execv komennolle */
 		char* passed_args[] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
 		path *ptr;
 		int *wstatus=0, i=1;
 
 		
-		if ((myargs = strtok(NULL, delim2)) !=NULL){
+		if ((myargs = strtok(NULL, delim2)) !=NULL){ //jos on >, otetaan kohdetiedoston nimi
 			file = strtok(NULL, delim2);
-		} else {
+		} else { //file = NULL, jotta uusissa kutsuissa vanha arvo ei jää kummittelemaan
 			file = NULL;
 		}
 		char *temp;
 		temp = strtok(myargs, delim);
-		passed_args[0] = strdup(com);
-		if (temp != NULL) {
+		passed_args[0] = strdup(com); //ensimmäinen argumentti on komento/tiedosto
+		if (temp != NULL) { //jos on useampia komentoja, otetaan ne listaan
 			passed_args[i] = strdup(temp);
 			while ((temp = strtok(NULL, delim)) != NULL) {
 				i++;
@@ -144,21 +145,23 @@ void parser(char strings[], pathPtr *paths) {
 			}
 		
 		}
-		file = file;
+		file = file; //jotta kääntäjä ei valita turhasta
 
 				
 		int x=0;
 		ptr = (*paths);
-		while (ptr != NULL) {
+		while (ptr != NULL) { //käydään polut läpi ja tallennetaan montako polkua on tallennettu
 			x++;
 			ptr = ptr->next;
-
 		}
+		if (x == 0) {//jos polkuja ei ole, keskeytetään
+			printf("No paths defined.");
+			return;
 		if (fork() == 0) {
 					
 		//Tähän koodinpätkää otettu mallia täältä: https://stackoverflow.com/questions/2605130/redirecting-exec-output-to-a-buffer-or-file
 		/* ****** */
-		if (file != NULL) {
+		if (file != NULL) {//tulostuksen ohjaus tiedostoon
 			int redir = open(file, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
 			
 			dup2(redir, 1);
@@ -169,16 +172,16 @@ void parser(char strings[], pathPtr *paths) {
 		/* ****** */
 		
 		ptr = (*paths);
-		for (int i=0;i<x;i++) {
+		for (int i=0;i<x;i++) {//yritetään suorittaa jokaisella polulla
 			if (ptr->dir == NULL) {
 				break;
 			} 
-			path_var = concat(ptr->dir, com);
+			path_var = concat(ptr->dir, com); //yhdistetään polku ja komento
 
-			execv(path_var, passed_args);
+			execv(path_var, passed_args); //suoritus
 		}
 	} else {
-		wait(wstatus);
+		wait(wstatus); //odotetaan lapsiprosessin suoritusta
 	}
 	
 }
