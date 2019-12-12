@@ -157,6 +157,7 @@ void parser(char strings[], pathPtr *paths) {
 		if (x == 0) {//jos polkuja ei ole, keskeytetään
 			printf("No paths defined.");
 			return;
+		}
 		if (fork() == 0) {
 					
 		//Tähän koodinpätkää otettu mallia täältä: https://stackoverflow.com/questions/2605130/redirecting-exec-output-to-a-buffer-or-file
