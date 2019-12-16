@@ -1,3 +1,11 @@
+/*
+ * Käyttöjärjestelmät ja systeemiohjelmointi
+ * Harjoitustyö osa 6/6
+ * Syksy 2019
+ * Rami Saarivuori & Aarne Savolainen
+ * testaa getcount systeemikutsun
+*/
+
 #include "types.h"
 #include "stat.h"
 #include "user.h"
